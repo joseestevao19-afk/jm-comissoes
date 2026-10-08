@@ -1,28 +1,55 @@
-var CACHE = "vales-v1";
-var FILES = ["./", "index.html", "manifest.webmanifest", "pdf.min.js", "pdf.worker.min.js", "icon-192.png", "icon-512.png", "apple-touch-icon.png"];
-self.addEventListener("install", function (e) {
-  e.waitUntil(caches.open(CACHE).then(function (c) { return c.addAll(FILES); }).then(function () { return self.skipWaiting(); }));
+var CACHE_NAME = "vales-v3";
+var ASSETS = [
+  "./",
+  "./index.html",
+  "./manifest.webmanifest",
+  "./icon-192.png",
+  "./icon-512.png",
+  "./apple-touch-icon.png",
+  "./pdf.min.js",
+  "./pdf.worker.min.js"
+];
+
+self.addEventListener("install", function (event) {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(function (cache) {
+      return cache.addAll(ASSETS);
+    })
+  );
+  self.skipWaiting();
 });
-self.addEventListener("activate", function (e) {
-  e.waitUntil(caches.keys().then(function (ks) {
-    return Promise.all(ks.filter(function (k) { return k !== CACHE; }).map(function (k) { return caches.delete(k); }));
-  }).then(function () { return self.clients.claim(); }));
+
+self.addEventListener("activate", function (event) {
+  event.waitUntil(
+    caches.keys().then(function (keys) {
+      return Promise.all(
+        keys.map(function (key) {
+          if (key !== CACHE_NAME) return caches.delete(key);
+        })
+      );
+    })
+  );
+  self.clients.claim();
 });
-self.addEventListener("fetch", function (e) {
-  var url = new URL(e.request.url);
-  if (e.request.method !== "GET" || url.origin !== location.origin) return;
-  var page = e.request.mode === "navigate" || /\/$/.test(url.pathname) || /index\.html$/.test(url.pathname);
-  if (page) {
-    e.respondWith(fetch(e.request).then(function (r) {
-      if (r && r.ok) { var cp = r.clone(); caches.open(CACHE).then(function (c) { c.put(e.request, cp); }); }
-      return r;
-    }).catch(function () { return caches.match(e.request, { ignoreSearch: true }).then(function (h) { return h || caches.match("index.html"); }); }));
-    return;
-  }
-  e.respondWith(caches.match(e.request).then(function (hit) {
-    return hit || fetch(e.request).then(function (r) {
-      if (r && r.ok) { var cp = r.clone(); caches.open(CACHE).then(function (c) { c.put(e.request, cp); }); }
-      return r;
-    });
-  }));
+
+self.addEventListener("fetch", function (event) {
+  if (event.request.method !== "GET") return;
+  event.respondWith(
+    caches.match(event.request).then(function (cached) {
+      var network = fetch(event.request)
+        .then(function (res) {
+          if (res && res.status === 200) {
+            var copy = res.clone();
+            caches.open(CACHE_NAME).then(function (cache) {
+              cache.put(event.request, copy);
+            });
+          }
+          return res;
+        })
+        .catch(function () {
+          return cached;
+        });
+      return cached || network;
+    })
+  );
 });

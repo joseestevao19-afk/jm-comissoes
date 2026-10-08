@@ -66,13 +66,21 @@ body.locked .wrap { visibility: hidden; }
 @media (prefers-reduced-motion: reduce) { .dots.shake { animation: none; } }
 
 /* Resumo */
-.hero { background: var(--brand); color: var(--brand-ink); border-radius: 20px; padding: 22px 20px 18px; margin-bottom: 16px; }
+.hero { background: var(--brand); color: var(--brand-ink); border-radius: 20px; padding: 22px 20px 18px; margin-bottom: 16px; position: relative; }
 .hero .label { font-size: 15px; opacity: .8; }
 .hero .big { font-size: clamp(34px, 9vw, 48px); font-weight: 700; letter-spacing: -0.02em; line-height: 1.05; margin: 4px 0 4px; }
 .hero .bigsub { font-size: 14px; opacity: .8; margin-bottom: 14px; }
 .hero .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; border-top: 1px solid color-mix(in srgb, var(--brand-ink) 25%, transparent); padding-top: 14px; }
 .hero .k { font-size: 13px; opacity: .75; }
 .hero .v { font-size: 18px; font-weight: 500; }
+.lockbtn { position: absolute; z-index: 2; top: 14px; right: 14px; min-height: 34px; padding: 0 12px; font-size: 14px; background: transparent; color: var(--brand-ink); border: 1px solid color-mix(in srgb, var(--brand-ink) 40%, transparent); border-radius: 999px; }
+
+/* Nav principal */
+.seg { display: flex; width: 100%; background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 3px; margin-bottom: 16px; }
+.seg button { flex: 1; border: 0; background: transparent; min-height: 38px; padding: 0 8px; border-radius: 999px; font-size: 15px; color: var(--muted); white-space: nowrap; }
+.seg button[aria-pressed="true"] { background: var(--brand); color: var(--brand-ink); font-weight: 700; }
+.seg.wrap2 { flex-wrap: wrap; border-radius: 16px; gap: 4px; }
+.seg.wrap2 button { flex: 0 0 auto; border-radius: 999px; padding: 0 14px; }
 
 /* Cartões / forms */
 .card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 18px; margin-bottom: 16px; }
@@ -100,11 +108,6 @@ button.danger { color: var(--deve); border-color: var(--deve); }
 a.btn { display: inline-flex; align-items: center; text-decoration: none; font: inherit; font-size: 14px; cursor: pointer; border-radius: 10px; min-height: 38px; padding: 0 12px; border: 1.5px solid var(--line); background: var(--surface); color: var(--ink); }
 a.btn.zap { border-color: var(--ok); color: var(--ok); }
 .row2 { display: flex; gap: 10px; flex-wrap: wrap; }
-
-/* Seletor de funcionário */
-.seg { display: flex; flex-wrap: wrap; gap: 8px; }
-.seg button { border-radius: 999px; padding: 0 16px; min-height: 40px; font-size: 14px; }
-.seg button[aria-pressed="true"] { background: var(--brand); color: var(--brand-ink); border-color: var(--brand); font-weight: 700; }
 
 /* Funcionário */
 .fcard { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 18px; margin-bottom: 16px; }
@@ -141,6 +144,32 @@ a.btn.zap { border-color: var(--ok); color: var(--ok); }
 .foot { text-align: center; color: var(--muted); font-size: 13px; margin-top: 18px; }
 .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
+/* Relatório */
+.yearnav { display: flex; align-items: center; justify-content: space-between; margin: 14px 0 4px; }
+.yearnav strong { font-size: 20px; }
+.yearnav button { width: 46px; padding: 0; font-size: 22px; }
+.stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0; }
+.stat { background: var(--bg); border-radius: 12px; padding: 12px 14px; }
+.stat.main { grid-column: 1 / -1; }
+.stat .k { font-size: 13px; color: var(--muted); }
+.stat .v { font-size: 22px; font-weight: 700; }
+.stat.main .v { font-size: 28px; color: var(--ok); }
+.legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: 13px; color: var(--muted); margin: 6px 0 12px; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.dot { display: inline-block; width: 12px; height: 12px; border-radius: 4px; }
+.dot.c, .bar i.c { background: var(--ok); }
+.dot.v, .bar i.v { background: var(--deve); opacity: .75; }
+.rrow { padding: 12px 0; border-top: 1px solid var(--line); }
+.rrow.zero .rm, .rrow.zero .rv { color: var(--muted); font-weight: 400; }
+.rtop { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.rm { font-weight: 700; }
+.rm small { font-weight: 400; color: var(--muted); font-size: 13px; }
+.rv { font-size: 17px; font-weight: 700; }
+.bar { display: flex; height: 10px; border-radius: 5px; background: var(--bg); overflow: hidden; margin: 6px 0 4px; }
+.bar i { display: block; height: 100%; }
+.rsub { font-size: 13px; color: var(--muted); }
+.rnote { font-size: 13px; color: var(--muted); margin: 14px 0 0; }
+
 /* Configurações */
 details.cfg { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 4px 18px; margin-top: 22px; }
 details.cfg summary { cursor: pointer; padding: 14px 0; font-weight: 700; font-size: 17px; }
@@ -166,7 +195,7 @@ details.cfg p { font-size: 14px; color: var(--muted); margin: 0 0 10px; }
 <div class="wrap">
 
   <section class="hero" aria-label="Resumo">
-    <button type="button" class="small" id="btnLockTop" style="position:absolute;top:14px;right:14px;z-index:2;min-height:34px;padding:0 12px;font-size:14px;background:transparent;color:var(--brand-ink);border:1px solid color-mix(in srgb, var(--brand-ink) 40%, transparent);border-radius:999px;">Bloquear</button>
+    <button type="button" class="lockbtn" id="btnLockTop">Bloquear</button>
     <div class="label" id="heroLabel">Situação geral</div>
     <div class="big num" id="sTotal">R$ 0,00</div>
     <div class="bigsub" id="sTotalSub"></div>
@@ -176,26 +205,53 @@ details.cfg p { font-size: 14px; color: var(--muted); margin: 0 0 10px; }
     </div>
   </section>
 
-  <section class="card" aria-labelledby="fuTitle">
-    <h2 id="fuTitle">Funcionários</h2>
-    <div class="seg" id="seg" role="group" aria-label="Escolher funcionário"></div>
-    <div class="addline" style="margin-top:14px;padding-top:0;border-top:0;">
-      <div class="fields2">
-        <div class="field">
-          <label for="fuNome">Novo funcionário</label>
-          <input type="text" id="fuNome" autocomplete="off" placeholder="Nome completo">
-        </div>
-        <div class="field">
-          <label for="fuTel">Telefone / WhatsApp (opcional)</label>
-          <input type="text" id="fuTel" inputmode="tel" autocomplete="off" placeholder="(68) 99999-9999">
-        </div>
-      </div>
-      <button type="button" class="small" id="btnAddFunc">Adicionar funcionário</button>
-      <div class="err" id="fuErr" role="alert"></div>
-    </div>
-  </section>
+  <div class="seg" id="mainNav" role="group" aria-label="Seção">
+    <button type="button" data-v="func" aria-pressed="true">Funcionários</button>
+    <button type="button" data-v="rel" aria-pressed="false">Relatório</button>
+  </div>
 
-  <div id="detalhe"></div>
+  <div id="viewFunc">
+    <section class="card" aria-labelledby="fuTitle">
+      <h2 id="fuTitle">Funcionários</h2>
+      <div class="seg wrap2" id="segFunc" role="group" aria-label="Escolher funcionário"></div>
+      <div class="addline" style="margin-top:14px;padding-top:0;border-top:0;">
+        <div class="fields2">
+          <div class="field">
+            <label for="fuNome">Novo funcionário</label>
+            <input type="text" id="fuNome" autocomplete="off" placeholder="Nome completo">
+          </div>
+          <div class="field">
+            <label for="fuTel">Telefone / WhatsApp (opcional)</label>
+            <input type="text" id="fuTel" inputmode="tel" autocomplete="off" placeholder="(68) 99999-9999">
+          </div>
+        </div>
+        <button type="button" class="small" id="btnAddFunc">Adicionar funcionário</button>
+        <div class="err" id="fuErr" role="alert"></div>
+      </div>
+    </section>
+
+    <div id="detalhe"></div>
+  </div>
+
+  <div id="viewRel" hidden>
+    <section class="card" aria-labelledby="rTitle">
+      <h2 id="rTitle">Relatório</h2>
+      <div class="seg wrap2" id="segQuem" role="group" aria-label="Escolher quem"></div>
+      <div class="seg" id="segPeriodo" role="group" aria-label="Período" style="margin-top:10px;">
+        <button type="button" data-p="mensal" aria-pressed="true">Mensal</button>
+        <button type="button" data-p="anual" aria-pressed="false">Anual</button>
+      </div>
+      <div class="yearnav" id="yearNav">
+        <button type="button" id="rPrev" aria-label="Ano anterior">‹</button>
+        <strong id="rYear"></strong>
+        <button type="button" id="rNext" aria-label="Próximo ano">›</button>
+      </div>
+      <div class="stats" id="rStats"></div>
+      <div class="legend"><span><i class="dot c"></i>Comissões</span><span><i class="dot v"></i>Vales</span></div>
+      <div id="rRows"></div>
+      <p class="rnote" id="rNote"></p>
+    </section>
+  </div>
 
   <details class="cfg">
     <summary>Configurações e backup</summary>
@@ -300,7 +356,18 @@ details.cfg p { font-size: 14px; color: var(--muted); margin: 0 0 10px; }
     return "https://wa.me/" + d + "?text=" + encodeURIComponent(msg);
   }
 
-  /* ---------- Render ---------- */
+  /* ---------- Nav principal ---------- */
+  var mainView = "func";
+  function showMain(v) {
+    mainView = v;
+    $("viewFunc").hidden = v !== "func"; $("viewRel").hidden = v !== "rel";
+    document.querySelectorAll("#mainNav button").forEach(function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-v") === v ? "true" : "false"); });
+    if (v === "rel") renderRel();
+    window.scrollTo(0, 0);
+  }
+  document.querySelectorAll("#mainNav button").forEach(function (b) { b.addEventListener("click", function () { showMain(b.getAttribute("data-v")); }); });
+
+  /* ---------- Render funcionários ---------- */
   function render() {
     var tc = 0, tv = 0, saldoPagar = 0, saldoReceber = 0;
     func.forEach(function (f) {
@@ -323,21 +390,21 @@ details.cfg p { font-size: 14px; color: var(--muted); margin: 0 0 10px; }
       $("sTotalSub").textContent = saldoPagar ? ("Sendo " + money(saldoPagar) + " ainda a pagar a outros funcionários") : "";
     }
 
-    var seg = $("seg");
+    var seg = $("segFunc");
     if (!func.length) {
-      seg.innerHTML = '<span style="color:var(--muted);font-size:14px;">Nenhum funcionário ainda. Adicione um acima.</span>';
+      seg.innerHTML = '<span style="color:var(--muted);font-size:14px;padding:8px 4px;">Nenhum funcionário ainda. Adicione um abaixo.</span>';
       $("detalhe").innerHTML = "";
-      return;
+    } else {
+      if (!atualId || !func.some(function (f) { return f.id === atualId; })) atualId = func[0].id;
+      seg.innerHTML = func.map(function (f) {
+        var t = totais(f);
+        var cls = t.saldo > 0 ? "ok" : (t.saldo < 0 ? "deve" : "zero");
+        return '<button type="button" data-id="' + f.id + '" aria-pressed="' + (f.id === atualId) + '">' + esc(f.nome) +
+          ' <span class="pill ' + cls + '" style="margin-left:6px;">' + money(Math.abs(t.saldo)) + "</span></button>";
+      }).join("");
+      renderDetalhe();
     }
-    if (!atualId || !func.some(function (f) { return f.id === atualId; })) atualId = func[0].id;
-    seg.innerHTML = func.map(function (f) {
-      var t = totais(f);
-      var cls = t.saldo > 0 ? "ok" : (t.saldo < 0 ? "deve" : "zero");
-      return '<button type="button" data-id="' + f.id + '" aria-pressed="' + (f.id === atualId) + '">' + esc(f.nome) +
-        ' <span class="pill ' + cls + '" style="margin-left:6px;">' + money(Math.abs(t.saldo)) + "</span></button>";
-    }).join("");
-
-    renderDetalhe();
+    renderSegQuem();
   }
 
   function renderDetalhe() {
@@ -348,12 +415,12 @@ details.cfg p { font-size: 14px; color: var(--muted); margin: 0 0 10px; }
     var cls = t.saldo > 0 ? "ok" : (t.saldo < 0 ? "deve" : "zero");
     var pillTxt = t.saldo > 0 ? "A pagar ao funcionário: " + money(t.saldo) : (t.saldo < 0 ? "Funcionário deve: " + money(-t.saldo) : "Saldo zerado");
     var msg = t.saldo > 0
-      ? ("Olá, " + f.nome.split(/\s+/)[0] + "! Fechando as contas por aqui: suas comissões somaram " + money(t.comissao).replace(/\u00a0/g, " ") + " e os vales somaram " + money(t.vale).replace(/\u00a0/g, " ") + ". Fica um saldo de " + money(t.saldo).replace(/\u00a0/g, " ") + " a pagar para você.")
-      : ("Olá, " + f.nome.split(/\s+/)[0] + "! Fechando as contas por aqui: suas comissões somaram " + money(t.comissao).replace(/\u00a0/g, " ") + " e os vales somaram " + money(t.vale).replace(/\u00a0/g, " ") + ". Fica um saldo de " + money(-t.saldo).replace(/\u00a0/g, " ") + " que você ainda deve para a empresa.");
+      ? ("Olá, " + f.nome.split(/\s+/)[0] + "! Fechando as contas por aqui: suas comissões somaram " + money(t.comissao).replace(/ /g, " ") + " e os vales somaram " + money(t.vale).replace(/ /g, " ") + ". Fica um saldo de " + money(t.saldo).replace(/ /g, " ") + " a pagar para você.")
+      : ("Olá, " + f.nome.split(/\s+/)[0] + "! Fechando as contas por aqui: suas comissões somaram " + money(t.comissao).replace(/ /g, " ") + " e os vales somaram " + money(t.vale).replace(/ /g, " ") + ". Fica um saldo de " + money(-t.saldo).replace(/ /g, " ") + " que você ainda deve para a empresa.");
 
     var comissoesHtml = f.comissoes.length ? f.comissoes.slice().reverse().map(function (c) {
       var conf = apagarCom === c.id;
-      return '<div class="item"><div class="d"><div class="t1">' + esc(c.cliente) + '</div><div class="t2">' + esc(c.servico) + '</div></div>' +
+      return '<div class="item"><div class="d"><div class="t1">' + esc(c.cliente) + '</div><div class="t2">' + esc(c.servico) + (c.data ? " · " + fmtDate(c.data) : "") + '</div></div>' +
         '<div class="v num">' + money(c.valor) + "</div>" +
         (conf
           ? '<button class="del" data-a="com-sim" data-id="' + c.id + '" aria-label="Confirmar exclusão">✓</button><button class="del" data-a="com-nao" aria-label="Cancelar">✕</button>'
@@ -369,6 +436,7 @@ details.cfg p { font-size: 14px; color: var(--muted); margin: 0 0 10px; }
     }).join("") : '<div class="empty2">Nenhum vale lançado ainda.</div>';
 
     var confF = apagarFunc === f.id;
+    var hoje = isoDate(today());
 
     box.innerHTML = '<div class="fcard">' +
       '<div class="ftop"><div><div class="fname">' + esc(f.nome) + '</div>' + (f.tel ? '<div class="ftel">' + esc(maskTel(f.tel)) + '</div>' : '') + '</div>' +
@@ -382,6 +450,7 @@ details.cfg p { font-size: 14px; color: var(--muted); margin: 0 0 10px; }
       '<div class="field"><label for="ncCliente">Cliente / Obra</label><input type="text" id="ncCliente" autocomplete="off"></div>' +
       '<div class="field"><label for="ncServico">Serviço</label><input type="text" id="ncServico" autocomplete="off"></div>' +
       '<div class="field"><label for="ncValor">Valor (R$)</label><input type="text" id="ncValor" inputmode="decimal" autocomplete="off"></div>' +
+      '<div class="field"><label for="ncData">Data (opcional)</label><input type="date" id="ncData" value="' + hoje + '"></div>' +
       '</div><div class="err" id="ncErr" role="alert"></div><button type="button" class="small" data-a="add-com">Adicionar comissão</button></div>' +
 
       '<div class="sub2" style="margin-top:20px;">Vales</div>' +
@@ -406,7 +475,7 @@ details.cfg p { font-size: 14px; color: var(--muted); margin: 0 0 10px; }
     if (!$("nvData").value) $("nvData").value = isoDate(today());
   }
 
-  $("seg").addEventListener("click", function (e) {
+  $("segFunc").addEventListener("click", function (e) {
     var b = e.target.closest("button[data-id]"); if (!b) return;
     atualId = b.getAttribute("data-id"); apagarVale = null; apagarCom = null; apagarFunc = null;
     render();
@@ -419,12 +488,13 @@ details.cfg p { font-size: 14px; color: var(--muted); margin: 0 0 10px; }
 
     if (a === "add-com") {
       var cliente = $("ncCliente").value.trim(), servico = $("ncServico").value.trim(), valor = parseNum($("ncValor").value);
+      var dataC = $("ncData").value || isoDate(today());
       var err = "";
       if (!cliente) err = "Informe o cliente ou obra.";
       else if (!servico) err = "Informe o serviço.";
       else if (isNaN(valor) || valor <= 0) err = "Informe o valor da comissão.";
       $("ncErr").textContent = err; if (err) return;
-      f.comissoes.push({ id: newId("c"), cliente: cliente, servico: servico, valor: round2(valor) });
+      f.comissoes.push({ id: newId("c"), cliente: cliente, servico: servico, valor: round2(valor), data: dataC });
       cacheSave(); render();
     } else if (a === "com-apagar") { apagarCom = b.getAttribute("data-id"); renderDetalhe(); }
     else if (a === "com-nao") { apagarCom = null; renderDetalhe(); }
@@ -470,7 +540,7 @@ details.cfg p { font-size: 14px; color: var(--muted); margin: 0 0 10px; }
   var MESES = { jan: 1, fev: 2, mar: 3, abr: 4, mai: 5, jun: 6, jul: 7, ago: 8, set: 9, out: 10, nov: 11, dez: 12 };
   function parseComprovante(text) {
     var out = { valor: null, data: null };
-    var t = text.replace(/\u00a0/g, " ");
+    var t = text.replace(/ /g, " ");
     var m = t.match(/valor(?:\s+(?:da\s+)?(?:transfer[eê]ncia|pix|pago|transferido|enviado))?\s*:?\s*(?:R\s?\$)?\s*(\d{1,3}(?:\.\d{3})*,\d{2})/i) ||
             t.match(/R\s?\$\s*(\d{1,3}(?:\.\d{3})*,\d{2})/i);
     if (m) out.valor = parseNum(m[1]);
@@ -497,6 +567,103 @@ details.cfg p { font-size: 14px; color: var(--muted); margin: 0 0 10px; }
     }).catch(function () { setValeSt("Não consegui ler esse PDF. Preencha à mão.", "bad"); })
       .then(function () { e.target.value = ""; });
   });
+
+  /* ---------- Relatório ---------- */
+  var relQuem = "todos", relPeriodo = "mensal", relYear = today().getFullYear();
+  var MESES_N = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+
+  function renderSegQuem() {
+    var seg = $("segQuem");
+    var html = '<button type="button" data-q="todos" aria-pressed="' + (relQuem === "todos") + '">Todos</button>';
+    html += func.map(function (f) {
+      return '<button type="button" data-q="' + f.id + '" aria-pressed="' + (relQuem === f.id) + '">' + esc(f.nome) + "</button>";
+    }).join("");
+    seg.innerHTML = html;
+    if (relQuem !== "todos" && !func.some(function (f) { return f.id === relQuem; })) relQuem = "todos";
+  }
+  $("segQuem").addEventListener("click", function (e) {
+    var b = e.target.closest("button[data-q]"); if (!b) return;
+    relQuem = b.getAttribute("data-q");
+    document.querySelectorAll("#segQuem button").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+    renderRel();
+  });
+  document.querySelectorAll("#segPeriodo button").forEach(function (b) {
+    b.addEventListener("click", function () {
+      relPeriodo = b.getAttribute("data-p");
+      document.querySelectorAll("#segPeriodo button").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+      renderRel();
+    });
+  });
+  $("rPrev").addEventListener("click", function () { relYear--; renderRel(); });
+  $("rNext").addEventListener("click", function () { relYear++; renderRel(); });
+
+  function aggregate(alvo) {
+    var alvos = alvo === "todos" ? func : func.filter(function (f) { return f.id === alvo; });
+    var A = {};
+    var g = function (k) { return A[k] || (A[k] = { com: 0, vale: 0, nCom: 0 }); };
+    alvos.forEach(function (f) {
+      f.comissoes.forEach(function (c) { var k = (c.data || "").slice(0, 7); if (k) { var o = g(k); o.com += c.valor; o.nCom++; } });
+      f.vales.forEach(function (v) { var k = (v.data || "").slice(0, 7); if (k) { g(k).vale += v.valor; } });
+    });
+    return A;
+  }
+  function sumKeys(A, test) {
+    var t = { com: 0, vale: 0, nCom: 0 };
+    Object.keys(A).forEach(function (k) { if (test(k)) { t.com += A[k].com; t.vale += A[k].vale; t.nCom += A[k].nCom; } });
+    t.com = round2(t.com); t.vale = round2(t.vale);
+    return t;
+  }
+  function rowHtml(label, o, max, extraSmall) {
+    var zero = !o.com && !o.vale && !o.nCom;
+    var wc = max ? (o.com / max * 100) : 0, wv = max ? (o.vale / max * 100) : 0;
+    var subs = [];
+    if (o.nCom) subs.push(o.nCom + (o.nCom === 1 ? " comissão" : " comissões"));
+    if (o.vale) subs.push("vales " + money(o.vale));
+    return '<div class="rrow' + (zero ? " zero" : "") + '"><div class="rtop"><span class="rm">' + label + (extraSmall ? " <small>" + extraSmall + "</small>" : "") +
+      '</span><span class="rv num">' + money(o.com) + '</span></div>' +
+      (zero ? "" : '<div class="bar" aria-hidden="true"><i class="c" style="width:' + wc.toFixed(1) + '%"></i><i class="v" style="width:' + wv.toFixed(1) + '%"></i></div>') +
+      (subs.length ? '<div class="rsub num">' + subs.join(" · ") + "</div>" : "") + "</div>";
+  }
+  function renderRel() {
+    if (!func.length) {
+      $("rStats").innerHTML = ""; $("rRows").innerHTML = '<div class="empty">Nenhum funcionário ainda.</div>'; $("yearNav").style.visibility = "hidden"; $("rNote").textContent = ""; return;
+    }
+    $("yearNav").style.visibility = "visible";
+    var A = aggregate(relQuem), nowKey = isoDate(today()).slice(0, 7);
+    var quemNome = relQuem === "todos" ? "todos os funcionários" : esc((func.find(function (f) { return f.id === relQuem; }) || {}).nome || "");
+    var rows = "";
+    if (relPeriodo === "mensal") {
+      $("rYear").textContent = relYear;
+      var t = sumKeys(A, function (k) { return k.slice(0, 4) === String(relYear); });
+      $("rStats").innerHTML = [
+        ["main", "Comissões produzidas em " + relYear, money(t.com)],
+        ["", "Vales no período", money(t.vale)]
+      ].map(statHtml).join("");
+      var max = 0, list = [];
+      for (var m = 1; m <= 12; m++) {
+        var k = relYear + "-" + pad(m), o = A[k] || { com: 0, vale: 0, nCom: 0 };
+        list.push([k, m, o]); max = Math.max(max, o.com + o.vale);
+      }
+      list.forEach(function (x) { rows += rowHtml(MESES_N[x[1] - 1], x[2], max, x[0] === nowKey ? "mês atual" : ""); });
+    } else {
+      $("yearNav").style.visibility = "hidden";
+      var t2 = sumKeys(A, function () { return true; });
+      $("rStats").innerHTML = [
+        ["main", "Comissões produzidas (total)", money(t2.com)],
+        ["", "Vales no total", money(t2.vale)]
+      ].map(statHtml).join("");
+      var ys = {}; ys[String(today().getFullYear())] = 1;
+      Object.keys(A).forEach(function (k) { ys[k.slice(0, 4)] = 1; });
+      var years = Object.keys(ys).sort().reverse(), ymax = 0, yl = [];
+      years.forEach(function (y) {
+        var o = sumKeys(A, function (k) { return k.slice(0, 4) === y; }); yl.push([y, o]); ymax = Math.max(ymax, o.com + o.vale);
+      });
+      yl.forEach(function (x) { rows += rowHtml(x[0], x[1], ymax, x[0] === String(today().getFullYear()) ? "ano atual" : ""); });
+    }
+    $("rRows").innerHTML = rows;
+    $("rNote").textContent = "Mostrando " + quemNome + ". A comissão conta no mês da data informada ao lançar; sem data, ela não entra no relatório. Se apagar um lançamento, ele some daqui.";
+  }
+  function statHtml(s) { return '<div class="stat ' + s[0] + '"><div class="k">' + s[1] + '</div><div class="v num">' + s[2] + "</div></div>"; }
 
   /* ---------- Senha (PIN de 6 dígitos) ---------- */
   var LEN = 6, GRACE = 20000;
@@ -585,16 +752,16 @@ details.cfg p { font-size: 14px; color: var(--muted); margin: 0 0 10px; }
   }
   function back() { if (busy) return; buf = buf.slice(0, -1); dots(); }
   function buildPad() {
-    var pad = $("lockPad");
+    var pad2 = $("lockPad");
     "123456789".split("").forEach(function (n) {
       var b = document.createElement("button"); b.type = "button"; b.textContent = n; b.setAttribute("aria-label", n);
-      b.addEventListener("click", function () { press(n); }); pad.appendChild(b);
+      b.addEventListener("click", function () { press(n); }); pad2.appendChild(b);
     });
-    pad.appendChild(document.createElement("span"));
+    pad2.appendChild(document.createElement("span"));
     var z = document.createElement("button"); z.type = "button"; z.textContent = "0"; z.setAttribute("aria-label", "0");
-    z.addEventListener("click", function () { press("0"); }); pad.appendChild(z);
+    z.addEventListener("click", function () { press("0"); }); pad2.appendChild(z);
     var d = document.createElement("button"); d.type = "button"; d.className = "ghost"; d.textContent = "⌫"; d.setAttribute("aria-label", "Apagar");
-    d.addEventListener("click", back); pad.appendChild(d);
+    d.addEventListener("click", back); pad2.appendChild(d);
   }
   $("lockLink").addEventListener("click", function () {
     if (lockMode === "unlock") {
@@ -632,7 +799,6 @@ details.cfg p { font-size: 14px; color: var(--muted); margin: 0 0 10px; }
   }
 
   /* ---------- Backup ---------- */
-  function keyInfo() {} // placeholder para simetria
   function bkMsg(m, c) { $("bkSt").textContent = m; $("bkSt").className = "cfgst " + (c || ""); }
   $("btnBackup").addEventListener("click", function () {
     var name = "backup-vales-" + isoDate(today()) + ".json";
