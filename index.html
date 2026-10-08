@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#12302B">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Vales">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="icon-192.png">
+<title>Vales e Comissões</title>
+<style>
+:root {
+  --bg: #EDF1F0; --surface: #FFFFFF; --ink: #12302B; --muted: #5B706B; --line: #D5DEDB;
+  --brand: #12302B; --brand-ink: #FFFFFF;
+  --ok: #257A4A; --ok-bg: #DDF0E5;
+  --deve: #B3372E; --deve-bg: #F8E1DE;
+  --neutro: #8A5A00; --neutro-bg: #FBEFD2;
+  --focus: #1C6E8C;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0E1917; --surface: #162623; --ink: #E4EEEB; --muted: #93A9A3; --line: #27403B;
+    --brand: #E4EEEB; --brand-ink: #0E1917; --ok: #6CCB94; --ok-bg: #173627;
+    --deve: #F08C82; --deve-bg: #3C1E1B; --neutro: #E3B75E; --neutro-bg: #372C10; --focus: #6FC3E0;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0E1917; --surface: #162623; --ink: #E4EEEB; --muted: #93A9A3; --line: #27403B;
+  --brand: #E4EEEB; --brand-ink: #0E1917; --ok: #6CCB94; --ok-bg: #173627;
+  --deve: #F08C82; --deve-bg: #3C1E1B; --neutro: #E3B75E; --neutro-bg: #372C10; --focus: #6FC3E0;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--bg); color: var(--ink);
+  font-family: -apple-system, system-ui, "Segoe UI", Roboto, sans-serif;
+  font-size: 16px; line-height: 1.45; -webkit-text-size-adjust: 100%;
+}
+.wrap { max-width: 720px; margin: 0 auto; padding: calc(16px + env(safe-area-inset-top)) 16px calc(64px + env(safe-area-inset-bottom)); }
+.num { font-variant-numeric: tabular-nums; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+
+/* Bloqueio por senha */
+body.locked .wrap { visibility: hidden; }
+#lock { position: fixed; inset: 0; z-index: 100; background: var(--brand); color: var(--brand-ink); display: none; flex-direction: column; align-items: center; justify-content: center; gap: 18px; padding: calc(24px + env(safe-area-inset-top)) 24px calc(24px + env(safe-area-inset-bottom)); }
+#lock.on { display: flex; }
+#lock h1 { font-size: 24px; margin: 0; }
+#lock .sub { opacity: .85; font-size: 15px; text-align: center; min-height: 40px; max-width: 300px; }
+#lock .sub.bad { opacity: 1; font-weight: 700; }
+#lock.cover > :not(h1) { visibility: hidden; }
+.dots { display: flex; gap: 14px; }
+.dots i { display: block; width: 14px; height: 14px; border-radius: 50%; border: 2px solid currentColor; }
+.dots i.f { background: currentColor; }
+.dots.shake { animation: shake .35s; }
+@keyframes shake { 20% { transform: translateX(-8px); } 40% { transform: translateX(8px); } 60% { transform: translateX(-6px); } 80% { transform: translateX(6px); } }
+.pad { display: grid; grid-template-columns: repeat(3, 76px); gap: 14px; margin: 6px 0; }
+.pad button, .pad span { width: 76px; height: 76px; }
+.pad button { border-radius: 50%; font-size: 28px; font-weight: 500; background: color-mix(in srgb, var(--brand-ink) 16%, transparent); color: inherit; border: 0; padding: 0; touch-action: manipulation; }
+.pad button:active { background: color-mix(in srgb, var(--brand-ink) 32%, transparent); }
+.pad button.ghost { background: transparent; font-size: 24px; }
+#lock .link { background: none; border: 0; color: inherit; opacity: .85; text-decoration: underline; min-height: 44px; font-size: 15px; max-width: 300px; text-align: center; }
+@media (prefers-reduced-motion: reduce) { .dots.shake { animation: none; } }
+
+/* Resumo */
+.hero { background: var(--brand); color: var(--brand-ink); border-radius: 20px; padding: 22px 20px 18px; margin-bottom: 16px; }
+.hero .label { font-size: 15px; opacity: .8; }
+.hero .big { font-size: clamp(34px, 9vw, 48px); font-weight: 700; letter-spacing: -0.02em; line-height: 1.05; margin: 4px 0 4px; }
+.hero .bigsub { font-size: 14px; opacity: .8; margin-bottom: 14px; }
+.hero .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; border-top: 1px solid color-mix(in srgb, var(--brand-ink) 25%, transparent); padding-top: 14px; }
+.hero .k { font-size: 13px; opacity: .75; }
+.hero .v { font-size: 18px; font-weight: 500; }
+
+/* Cartões / forms */
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 18px; margin-bottom: 16px; }
+.card h2 { font-size: 19px; margin: 0 0 14px; font-weight: 700; }
+.card h3 { font-size: 16px; margin: 0 0 10px; }
+.fields { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.field { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.field.full { grid-column: 1 / -1; }
+label { font-size: 14px; color: var(--muted); }
+input[type="text"], input[type="date"] {
+  width: 100%; min-width: 0; font: inherit; color: var(--ink); background: var(--bg);
+  border: 1.5px solid var(--line); border-radius: 10px; padding: 11px 12px; min-height: 46px;
+}
+input:focus-visible { outline-offset: 0; border-color: var(--focus); }
+.actions { grid-column: 1 / -1; display: flex; gap: 10px; }
+.err { grid-column: 1 / -1; color: var(--deve); font-size: 14px; min-height: 0; }
+button {
+  font: inherit; cursor: pointer; border-radius: 10px; min-height: 46px; padding: 0 16px;
+  border: 1.5px solid var(--line); background: var(--surface); color: var(--ink);
+}
+button.primary { background: var(--brand); color: var(--brand-ink); border-color: var(--brand); font-weight: 700; flex: 1; }
+button.small { min-height: 38px; padding: 0 12px; font-size: 14px; }
+button.ok { background: var(--ok); color: #fff; border-color: var(--ok); font-weight: 500; }
+button.danger { color: var(--deve); border-color: var(--deve); }
+a.btn { display: inline-flex; align-items: center; text-decoration: none; font: inherit; font-size: 14px; cursor: pointer; border-radius: 10px; min-height: 38px; padding: 0 12px; border: 1.5px solid var(--line); background: var(--surface); color: var(--ink); }
+a.btn.zap { border-color: var(--ok); color: var(--ok); }
+.row2 { display: flex; gap: 10px; flex-wrap: wrap; }
+
+/* Seletor de funcionário */
+.seg { display: flex; flex-wrap: wrap; gap: 8px; }
+.seg button { border-radius: 999px; padding: 0 16px; min-height: 40px; font-size: 14px; }
+.seg button[aria-pressed="true"] { background: var(--brand); color: var(--brand-ink); border-color: var(--brand); font-weight: 700; }
+
+/* Funcionário */
+.fcard { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 18px; margin-bottom: 16px; }
+.ftop { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.fname { font-size: 20px; font-weight: 700; }
+.ftel { font-size: 14px; color: var(--muted); margin-top: 2px; }
+.pill { display: inline-block; font-size: 13px; font-weight: 700; padding: 5px 12px; border-radius: 999px; white-space: nowrap; }
+.pill.deve { background: var(--deve-bg); color: var(--deve); }
+.pill.ok { background: var(--ok-bg); color: var(--ok); }
+.pill.zero { background: var(--neutro-bg); color: var(--neutro); }
+.ftotais { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 14px 0; }
+.ftotal { background: var(--bg); border-radius: 12px; padding: 10px 14px; }
+.ftotal .k { font-size: 13px; color: var(--muted); }
+.ftotal .v { font-size: 18px; font-weight: 700; }
+.sub2 { font-size: 15px; font-weight: 700; margin: 14px 0 8px; }
+.item { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 0; border-top: 1px solid var(--line); }
+.item .d { min-width: 0; }
+.item .d .t1 { font-weight: 500; overflow-wrap: anywhere; }
+.item .d .t2 { font-size: 13px; color: var(--muted); }
+.item .v { font-weight: 700; white-space: nowrap; }
+.item .v.neg { color: var(--deve); }
+.item .del { background: none; border: 0; color: var(--muted); min-height: 32px; min-width: 32px; padding: 0; font-size: 18px; }
+.empty2 { font-size: 14px; color: var(--muted); padding: 8px 0; }
+.addline { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 10px; padding-top: 12px; border-top: 1px dashed var(--line); }
+.addline .fields2 { display: grid; grid-template-columns: 1fr; gap: 10px; }
+.addline button.small { align-self: start; }
+.import2 { border: 1.5px dashed var(--line); border-radius: 12px; padding: 10px 12px; font-size: 13px; color: var(--muted); }
+.import2 b { color: var(--ink); display: block; font-size: 14px; margin-bottom: 6px; }
+.import2 .st { margin-top: 6px; }
+.import2 .st.bad { color: var(--deve); }
+.import2 .st.good { color: var(--ok); }
+
+.empty { text-align: center; color: var(--muted); padding: 28px 12px; border: 1.5px dashed var(--line); border-radius: 16px; }
+.foot { text-align: center; color: var(--muted); font-size: 13px; margin-top: 18px; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* Configurações */
+details.cfg { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 4px 18px; margin-top: 22px; }
+details.cfg summary { cursor: pointer; padding: 14px 0; font-weight: 700; font-size: 17px; }
+details.cfg .blk { padding: 4px 0 16px; border-top: 1px solid var(--line); }
+details.cfg h3 { font-size: 16px; margin: 14px 0 4px; }
+details.cfg p { font-size: 14px; color: var(--muted); margin: 0 0 10px; }
+.cfgst { font-size: 14px; margin-top: 8px; min-height: 20px; }
+.cfgst.good { color: var(--ok); } .cfgst.bad { color: var(--deve); }
+
+@media (max-width: 420px) { .fields { grid-template-columns: 1fr; } .ftotais { grid-template-columns: 1fr 1fr; } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body class="locked">
+<div id="lock" class="on" role="dialog" aria-modal="true" aria-labelledby="lockTitle">
+  <h1 id="lockTitle">Vales e Comissões</h1>
+  <div class="sub" id="lockSub" role="status"></div>
+  <div class="dots" id="lockDots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  <div class="pad" id="lockPad"></div>
+  <button class="link" id="lockLink" type="button" hidden>Esqueci a senha</button>
+</div>
+
+<div class="wrap">
+
+  <section class="hero" aria-label="Resumo">
+    <button type="button" class="small" id="btnLockTop" style="position:absolute;top:14px;right:14px;z-index:2;min-height:34px;padding:0 12px;font-size:14px;background:transparent;color:var(--brand-ink);border:1px solid color-mix(in srgb, var(--brand-ink) 40%, transparent);border-radius:999px;">Bloquear</button>
+    <div class="label" id="heroLabel">Situação geral</div>
+    <div class="big num" id="sTotal">R$ 0,00</div>
+    <div class="bigsub" id="sTotalSub"></div>
+    <div class="grid">
+      <div><div class="k">Total de comissões</div><div class="v num" id="sComissao">R$ 0,00</div></div>
+      <div><div class="k">Total de vales</div><div class="v num" id="sVale">R$ 0,00</div></div>
+    </div>
+  </section>
+
+  <section class="card" aria-labelledby="fuTitle">
+    <h2 id="fuTitle">Funcionários</h2>
+    <div class="seg" id="seg" role="group" aria-label="Escolher funcionário"></div>
+    <div class="addline" style="margin-top:14px;padding-top:0;border-top:0;">
+      <div class="fields2">
+        <div class="field">
+          <label for="fuNome">Novo funcionário</label>
+          <input type="text" id="fuNome" autocomplete="off" placeholder="Nome completo">
+        </div>
+        <div class="field">
+          <label for="fuTel">Telefone / WhatsApp (opcional)</label>
+          <input type="text" id="fuTel" inputmode="tel" autocomplete="off" placeholder="(68) 99999-9999">
+        </div>
+      </div>
+      <button type="button" class="small" id="btnAddFunc">Adicionar funcionário</button>
+      <div class="err" id="fuErr" role="alert"></div>
+    </div>
+  </section>
+
+  <div id="detalhe"></div>
+
+  <details class="cfg">
+    <summary>Configurações e backup</summary>
+    <div class="blk">
+      <h3>Segurança</h3>
+      <p>O app pede a senha ao abrir e quando você volta para ele depois de alguns segundos fora.</p>
+      <div class="row2">
+        <button type="button" class="small" id="btnLockNow">Bloquear agora</button>
+        <button type="button" class="small" id="btnChangePin">Alterar senha</button>
+      </div>
+      <div class="cfgst" id="pinSt" role="status"></div>
+      <h3>Backup dos dados</h3>
+      <p>Seus dados ficam só neste iPhone. Baixe um backup de vez em quando e guarde no Arquivos ou iCloud.</p>
+      <div class="row2">
+        <button type="button" class="small" id="btnBackup">Baixar backup</button>
+        <button type="button" class="small" id="btnRestore">Restaurar backup</button>
+        <input type="file" id="fileRestore" class="visually-hidden" accept="application/json,.json" tabindex="-1" aria-label="Arquivo de backup">
+      </div>
+      <div class="cfgst" id="bkSt" role="status"></div>
+    </div>
+  </details>
+  <div class="foot" id="storeInfo"></div>
+</div>
+
+<script src="pdf.min.js"></script>
+<script>
+(function () {
+  "use strict";
+  var LS_KEY = "vales_v1", PIN_KEY = "vales_pin", FAIL_KEY = "vales_fail";
+  var func = [];
+  var atualId = null;
+  var apagarVale = null, apagarCom = null, apagarFunc = null;
+
+  var $ = function (id) { return document.getElementById(id); };
+  var brl = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
+  function money(n) { return brl.format(n || 0); }
+  function round2(n) { return Math.round((n + Number.EPSILON) * 100) / 100; }
+  function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function parseNum(s) {
+    s = String(s || "").trim().replace(/[^\d.,-]/g, "");
+    if (!s) return NaN;
+    if (s.indexOf(",") > -1) s = s.replace(/\./g, "").replace(",", ".");
+    else if ((s.match(/\./g) || []).length > 1) s = s.replace(/\./g, "");
+    return parseFloat(s);
+  }
+  function pad(n) { return (n < 10 ? "0" : "") + n; }
+  function isoDate(d) { return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); }
+  function fromIso(s) { var p = s.split("-"); return new Date(+p[0], +p[1] - 1, +p[2]); }
+  function fmtDate(s) { if (!s) return ""; var p = s.split("-"); return p[2] + "/" + p[1] + "/" + p[0]; }
+  function today() { var d = new Date(); return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
+  function newId(pre) { return (pre || "i") + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+  function onlyDigits(v) { return String(v || "").replace(/\D/g, ""); }
+  function maskTel(v) {
+    var d = onlyDigits(v).slice(0, 11);
+    if (d.length <= 2) return d ? "(" + d : "";
+    var o = "(" + d.slice(0, 2) + ") ";
+    return o + (d.length > 10 ? d.slice(2, 7) + "-" + d.slice(7) : d.slice(2, 6) + (d.length > 6 ? "-" + d.slice(6) : ""));
+  }
+
+  /* ---------- Armazenamento ---------- */
+  function cacheSave() {
+    try { localStorage.setItem(LS_KEY, JSON.stringify(func)); }
+    catch (e) { $("storeInfo").textContent = "Não consegui salvar neste aparelho. Baixe um backup agora."; }
+  }
+  function cacheLoad() {
+    try { var r = localStorage.getItem(LS_KEY); if (r) func = JSON.parse(r) || []; } catch (e) { func = []; }
+    func.forEach(function (f) { f.comissoes = f.comissoes || []; f.vales = f.vales || []; });
+  }
+  function info() { $("storeInfo").textContent = "Seus dados ficam salvos neste iPhone. Baixe um backup de vez em quando."; }
+
+  /* ---------- Cálculo ---------- */
+  function totais(f) {
+    var tc = 0, tv = 0;
+    f.comissoes.forEach(function (c) { tc += c.valor; });
+    f.vales.forEach(function (v) { tv += v.valor; });
+    tc = round2(tc); tv = round2(tv);
+    return { comissao: tc, vale: tv, saldo: round2(tc - tv) };
+  }
+
+  /* ---------- Funcionários ---------- */
+  function addFunc() {
+    var nome = $("fuNome").value.trim();
+    var tel = onlyDigits($("fuTel").value);
+    var err = "";
+    if (!nome) err = "Informe o nome.";
+    else if (tel && tel.length < 10) err = "O telefone precisa do DDD e do número.";
+    $("fuErr").textContent = err;
+    if (err) return;
+    var f = { id: newId("f"), nome: nome, tel: tel, comissoes: [], vales: [] };
+    func.push(f); cacheSave();
+    $("fuNome").value = ""; $("fuTel").value = "";
+    atualId = f.id;
+    render();
+    document.getElementById("detalhe").scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+  $("btnAddFunc").addEventListener("click", addFunc);
+  $("fuTel").addEventListener("input", function () { this.value = maskTel(this.value); });
+
+  function zapLink(f, msg) {
+    var d = onlyDigits(f.tel);
+    if (d.length <= 11) d = "55" + d;
+    return "https://wa.me/" + d + "?text=" + encodeURIComponent(msg);
+  }
+
+  /* ---------- Render ---------- */
+  function render() {
+    var tc = 0, tv = 0, saldoPagar = 0, saldoReceber = 0;
+    func.forEach(function (f) {
+      var t = totais(f); tc += t.comissao; tv += t.vale;
+      if (t.saldo > 0) saldoPagar += t.saldo; else saldoReceber += -t.saldo;
+    });
+    tc = round2(tc); tv = round2(tv);
+    var liquido = round2(tc - tv);
+    $("sComissao").textContent = money(tc);
+    $("sVale").textContent = money(tv);
+    if (!func.length) {
+      $("heroLabel").textContent = "Situação geral"; $("sTotal").textContent = money(0); $("sTotalSub").textContent = "";
+    } else if (liquido >= 0) {
+      $("heroLabel").textContent = "A empresa deve, no total, a pagar";
+      $("sTotal").textContent = money(liquido);
+      $("sTotalSub").textContent = saldoReceber ? ("Sendo " + money(saldoReceber) + " a receber de funcionários que ficaram devendo") : "";
+    } else {
+      $("heroLabel").textContent = "Funcionários devem, no total, à empresa";
+      $("sTotal").textContent = money(-liquido);
+      $("sTotalSub").textContent = saldoPagar ? ("Sendo " + money(saldoPagar) + " ainda a pagar a outros funcionários") : "";
+    }
+
+    var seg = $("seg");
+    if (!func.length) {
+      seg.innerHTML = '<span style="color:var(--muted);font-size:14px;">Nenhum funcionário ainda. Adicione um acima.</span>';
+      $("detalhe").innerHTML = "";
+      return;
+    }
+    if (!atualId || !func.some(function (f) { return f.id === atualId; })) atualId = func[0].id;
+    seg.innerHTML = func.map(function (f) {
+      var t = totais(f);
+      var cls = t.saldo > 0 ? "ok" : (t.saldo < 0 ? "deve" : "zero");
+      return '<button type="button" data-id="' + f.id + '" aria-pressed="' + (f.id === atualId) + '">' + esc(f.nome) +
+        ' <span class="pill ' + cls + '" style="margin-left:6px;">' + money(Math.abs(t.saldo)) + "</span></button>";
+    }).join("");
+
+    renderDetalhe();
+  }
+
+  function renderDetalhe() {
+    var f = func.find(function (x) { return x.id === atualId; });
+    var box = $("detalhe");
+    if (!f) { box.innerHTML = ""; return; }
+    var t = totais(f);
+    var cls = t.saldo > 0 ? "ok" : (t.saldo < 0 ? "deve" : "zero");
+    var pillTxt = t.saldo > 0 ? "A pagar ao funcionário: " + money(t.saldo) : (t.saldo < 0 ? "Funcionário deve: " + money(-t.saldo) : "Saldo zerado");
+    var msg = t.saldo > 0
+      ? ("Olá, " + f.nome.split(/\s+/)[0] + "! Fechando as contas por aqui: suas comissões somaram " + money(t.comissao).replace(/\u00a0/g, " ") + " e os vales somaram " + money(t.vale).replace(/\u00a0/g, " ") + ". Fica um saldo de " + money(t.saldo).replace(/\u00a0/g, " ") + " a pagar para você.")
+      : ("Olá, " + f.nome.split(/\s+/)[0] + "! Fechando as contas por aqui: suas comissões somaram " + money(t.comissao).replace(/\u00a0/g, " ") + " e os vales somaram " + money(t.vale).replace(/\u00a0/g, " ") + ". Fica um saldo de " + money(-t.saldo).replace(/\u00a0/g, " ") + " que você ainda deve para a empresa.");
+
+    var comissoesHtml = f.comissoes.length ? f.comissoes.slice().reverse().map(function (c) {
+      var conf = apagarCom === c.id;
+      return '<div class="item"><div class="d"><div class="t1">' + esc(c.cliente) + '</div><div class="t2">' + esc(c.servico) + '</div></div>' +
+        '<div class="v num">' + money(c.valor) + "</div>" +
+        (conf
+          ? '<button class="del" data-a="com-sim" data-id="' + c.id + '" aria-label="Confirmar exclusão">✓</button><button class="del" data-a="com-nao" aria-label="Cancelar">✕</button>'
+          : '<button class="del" data-a="com-apagar" data-id="' + c.id + '" aria-label="Apagar">🗑</button>') + "</div>";
+    }).join("") : '<div class="empty2">Nenhuma comissão lançada ainda.</div>';
+
+    var valesHtml = f.vales.length ? f.vales.slice().sort(function (a, b) { return b.data.localeCompare(a.data); }).map(function (v) {
+      var conf = apagarVale === v.id;
+      return '<div class="item"><div class="d"><div class="t1">' + money(v.valor) + '</div><div class="t2">' + fmtDate(v.data) + (v.desc ? " · " + esc(v.desc) : "") + '</div></div>' +
+        (conf
+          ? '<button class="del" data-a="vale-sim" data-id="' + v.id + '" aria-label="Confirmar exclusão">✓</button><button class="del" data-a="vale-nao" aria-label="Cancelar">✕</button>'
+          : '<button class="del" data-a="vale-apagar" data-id="' + v.id + '" aria-label="Apagar">🗑</button>') + "</div>";
+    }).join("") : '<div class="empty2">Nenhum vale lançado ainda.</div>';
+
+    var confF = apagarFunc === f.id;
+
+    box.innerHTML = '<div class="fcard">' +
+      '<div class="ftop"><div><div class="fname">' + esc(f.nome) + '</div>' + (f.tel ? '<div class="ftel">' + esc(maskTel(f.tel)) + '</div>' : '') + '</div>' +
+      '<span class="pill ' + cls + '">' + pillTxt + '</span></div>' +
+      '<div class="ftotais"><div class="ftotal"><div class="k">Total de comissões</div><div class="v num">' + money(t.comissao) + '</div></div>' +
+      '<div class="ftotal"><div class="k">Total de vales</div><div class="v num">' + money(t.vale) + '</div></div></div>' +
+      (f.tel ? '<div class="row2"><a class="btn" href="tel:' + esc(f.tel) + '">Ligar</a><a class="btn zap" target="_blank" rel="noopener" href="' + zapLink(f, msg) + '">WhatsApp do fechamento</a></div>' : '') +
+
+      '<div class="sub2">Comissões (Cliente / Serviço / Valor)</div>' + comissoesHtml +
+      '<div class="addline"><div class="fields2">' +
+      '<div class="field"><label for="ncCliente">Cliente / Obra</label><input type="text" id="ncCliente" autocomplete="off"></div>' +
+      '<div class="field"><label for="ncServico">Serviço</label><input type="text" id="ncServico" autocomplete="off"></div>' +
+      '<div class="field"><label for="ncValor">Valor (R$)</label><input type="text" id="ncValor" inputmode="decimal" autocomplete="off"></div>' +
+      '</div><div class="err" id="ncErr" role="alert"></div><button type="button" class="small" data-a="add-com">Adicionar comissão</button></div>' +
+
+      '<div class="sub2" style="margin-top:20px;">Vales</div>' +
+      '<div class="import2"><b>Importar comprovante (PDF)</b>Lê o valor e a data do PIX e preenche o vale sozinho.' +
+      '<div class="row2" style="margin-top:8px;"><button type="button" class="small" data-a="escolher-pdf">Escolher PDF</button></div>' +
+      '<input type="file" class="visually-hidden" id="fileVale" accept="application/pdf,.pdf" tabindex="-1" aria-label="Comprovante do vale">' +
+      '<div class="st" id="valeSt" role="status"></div></div>' +
+      valesHtml +
+      '<div class="addline"><div class="fields2">' +
+      '<div class="field"><label for="nvData">Data</label><input type="date" id="nvData"></div>' +
+      '<div class="field"><label for="nvValor">Valor (R$)</label><input type="text" id="nvValor" inputmode="decimal" autocomplete="off"></div>' +
+      '<div class="field"><label for="nvDesc">Descrição (opcional)</label><input type="text" id="nvDesc" autocomplete="off" placeholder="Ex: PIX Sicoob"></div>' +
+      '</div><div class="err" id="nvErr" role="alert"></div><button type="button" class="small" data-a="add-vale">Adicionar vale</button></div>' +
+
+      '<div class="row2" style="margin-top:20px;">' +
+      (confF
+        ? '<button class="small danger" data-a="func-sim">Confirmar exclusão do funcionário</button><button class="small" data-a="func-nao">Cancelar</button>'
+        : '<button class="small danger" data-a="func-apagar">Apagar funcionário</button>') +
+      '</div>' +
+      "</div>";
+
+    if (!$("nvData").value) $("nvData").value = isoDate(today());
+  }
+
+  $("seg").addEventListener("click", function (e) {
+    var b = e.target.closest("button[data-id]"); if (!b) return;
+    atualId = b.getAttribute("data-id"); apagarVale = null; apagarCom = null; apagarFunc = null;
+    render();
+  });
+
+  document.getElementById("detalhe").addEventListener("click", function (e) {
+    var b = e.target.closest("button[data-a]"); if (!b) return;
+    var a = b.getAttribute("data-a");
+    var f = func.find(function (x) { return x.id === atualId; }); if (!f) return;
+
+    if (a === "add-com") {
+      var cliente = $("ncCliente").value.trim(), servico = $("ncServico").value.trim(), valor = parseNum($("ncValor").value);
+      var err = "";
+      if (!cliente) err = "Informe o cliente ou obra.";
+      else if (!servico) err = "Informe o serviço.";
+      else if (isNaN(valor) || valor <= 0) err = "Informe o valor da comissão.";
+      $("ncErr").textContent = err; if (err) return;
+      f.comissoes.push({ id: newId("c"), cliente: cliente, servico: servico, valor: round2(valor) });
+      cacheSave(); render();
+    } else if (a === "com-apagar") { apagarCom = b.getAttribute("data-id"); renderDetalhe(); }
+    else if (a === "com-nao") { apagarCom = null; renderDetalhe(); }
+    else if (a === "com-sim") {
+      var cid = b.getAttribute("data-id");
+      f.comissoes = f.comissoes.filter(function (c) { return c.id !== cid; });
+      apagarCom = null; cacheSave(); render();
+    } else if (a === "add-vale") {
+      var data = $("nvData").value, valorV = parseNum($("nvValor").value), desc = $("nvDesc").value.trim();
+      var errv = "";
+      if (!data) errv = "Informe a data.";
+      else if (isNaN(valorV) || valorV <= 0) errv = "Informe o valor do vale.";
+      $("nvErr").textContent = errv; if (errv) return;
+      f.vales.push({ id: newId("v"), data: data, valor: round2(valorV), desc: desc });
+      cacheSave(); render();
+    } else if (a === "vale-apagar") { apagarVale = b.getAttribute("data-id"); renderDetalhe(); }
+    else if (a === "vale-nao") { apagarVale = null; renderDetalhe(); }
+    else if (a === "vale-sim") {
+      var vid = b.getAttribute("data-id");
+      f.vales = f.vales.filter(function (v) { return v.id !== vid; });
+      apagarVale = null; cacheSave(); render();
+    } else if (a === "func-apagar") { apagarFunc = f.id; renderDetalhe(); }
+    else if (a === "func-nao") { apagarFunc = null; renderDetalhe(); }
+    else if (a === "func-sim") {
+      func = func.filter(function (x) { return x.id !== f.id; });
+      atualId = func.length ? func[0].id : null; apagarFunc = null;
+      cacheSave(); render();
+    } else if (a === "escolher-pdf") { skipUntil = Date.now() + 180000; $("fileVale").click(); }
+  });
+
+  /* ---------- Importar comprovante de vale (PDF, local) ---------- */
+  var skipUntil = 0;
+  function setValeSt(msg, cls) { var e = $("valeSt"); if (e) { e.textContent = msg; e.className = "st " + (cls || ""); } }
+  function pdfText(file) {
+    if (!window.pdfjsLib) return Promise.reject(new Error("pdfjs"));
+    pdfjsLib.GlobalWorkerOptions.workerSrc = "pdf.worker.min.js";
+    return file.arrayBuffer().then(function (buf) { return pdfjsLib.getDocument({ data: buf }).promise; })
+      .then(function (pdf) {
+        return pdf.getPage(1).then(function (pg) { return pg.getTextContent(); })
+          .then(function (tc) { return tc.items.map(function (it) { return it.str + (it.hasEOL ? "\n" : " "); }).join("").trim(); });
+      });
+  }
+  var MESES = { jan: 1, fev: 2, mar: 3, abr: 4, mai: 5, jun: 6, jul: 7, ago: 8, set: 9, out: 10, nov: 11, dez: 12 };
+  function parseComprovante(text) {
+    var out = { valor: null, data: null };
+    var t = text.replace(/\u00a0/g, " ");
+    var m = t.match(/valor(?:\s+(?:da\s+)?(?:transfer[eê]ncia|pix|pago|transferido|enviado))?\s*:?\s*(?:R\s?\$)?\s*(\d{1,3}(?:\.\d{3})*,\d{2})/i) ||
+            t.match(/R\s?\$\s*(\d{1,3}(?:\.\d{3})*,\d{2})/i);
+    if (m) out.valor = parseNum(m[1]);
+    var d = t.match(/(\d{2})\/(\d{2})\/(\d{4})/);
+    if (d) out.data = d[3] + "-" + d[2] + "-" + d[1];
+    else {
+      d = t.match(/(\d{1,2})\s+(?:de\s+)?(jan|fev|mar|abr|mai|jun|jul|ago|set|out|nov|dez)[a-zç]*\.?\s+(?:de\s+)?(\d{4})/i);
+      if (d) out.data = d[3] + "-" + pad(MESES[d[2].toLowerCase()]) + "-" + pad(+d[1]);
+    }
+    return out;
+  }
+  $("detalhe").addEventListener("change", function (e) {
+    if (e.target.id !== "fileVale") return;
+    var file = e.target.files && e.target.files[0]; if (!file) return;
+    setValeSt("Lendo comprovante…", "");
+    pdfText(file).then(function (tx) {
+      if (tx.length < 20) throw new Error("sem_texto");
+      var d = parseComprovante(tx);
+      if (d.valor) $("nvValor").value = new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(d.valor);
+      if (d.data) $("nvData").value = d.data;
+      if (!d.valor && !d.data) setValeSt("Não consegui ler o valor nem a data. Preencha à mão.", "bad");
+      else if (!d.valor || !d.data) setValeSt("Preenchi o que consegui ler. Confira antes de adicionar.", "bad");
+      else setValeSt("Lido. Confira o valor e a data antes de adicionar.", "good");
+    }).catch(function () { setValeSt("Não consegui ler esse PDF. Preencha à mão.", "bad"); })
+      .then(function () { e.target.value = ""; });
+  });
+
+  /* ---------- Senha (PIN de 6 dígitos) ---------- */
+  var LEN = 6, GRACE = 20000;
+  var lockMode = "unlock", buf = "", firstPin = "", hiddenAt = 0;
+  var unlocked = false, busy = false, forgotArm = 0, forgotTimer = null, countdown = null, wasChange = false;
+  var enc = new TextEncoder();
+  function b64(bytes) { var s = ""; for (var i = 0; i < bytes.length; i++) s += String.fromCharCode(bytes[i]); return btoa(s); }
+  function unb64(s) { var r = atob(s), a = new Uint8Array(r.length); for (var i = 0; i < r.length; i++) a[i] = r.charCodeAt(i); return a; }
+  function derive(pin, salt) {
+    return crypto.subtle.importKey("raw", enc.encode(pin), "PBKDF2", false, ["deriveBits"]).then(function (k) {
+      return crypto.subtle.deriveBits({ name: "PBKDF2", salt: salt, iterations: 150000, hash: "SHA-256" }, k, 256);
+    }).then(function (bits) { return b64(new Uint8Array(bits)); });
+  }
+  function getPin() { try { return JSON.parse(localStorage.getItem(PIN_KEY) || "null"); } catch (e) { return null; } }
+  function savePin(pin) {
+    var salt = crypto.getRandomValues(new Uint8Array(16));
+    return derive(pin, salt).then(function (h) { localStorage.setItem(PIN_KEY, JSON.stringify({ salt: b64(salt), hash: h })); });
+  }
+  function checkPin(pin) {
+    var r = getPin(); if (!r) return Promise.resolve(false);
+    return derive(pin, unb64(r.salt)).then(function (h) { return h === r.hash; });
+  }
+  function getFail() { try { return JSON.parse(localStorage.getItem(FAIL_KEY) || "null") || { n: 0, until: 0 }; } catch (e) { return { n: 0, until: 0 }; } }
+  function setFail(o) { try { localStorage.setItem(FAIL_KEY, JSON.stringify(o)); } catch (e) {} }
+  function dots() { var d = $("lockDots").children; for (var i = 0; i < LEN; i++) d[i].className = i < buf.length ? "f" : ""; }
+  function lsub(msg, bad) { var e = $("lockSub"); e.textContent = msg || ""; e.className = "sub" + (bad ? " bad" : ""); }
+  function shake() { var d = $("lockDots"); d.classList.remove("shake"); void d.offsetWidth; d.classList.add("shake"); }
+  function blockedMs() { return Math.max(0, getFail().until - Date.now()); }
+  function checkBlock() {
+    clearInterval(countdown);
+    if (lockMode !== "unlock" && lockMode !== "change_old") return;
+    var upd = function () {
+      var ms = blockedMs();
+      if (ms > 0) { lsub("Muitas tentativas erradas. Aguarde " + Math.ceil(ms / 1000) + "s.", true); return true; }
+      return false;
+    };
+    if (upd()) { countdown = setInterval(function () { if (!upd()) { clearInterval(countdown); lsub(lockMode === "unlock" ? "Digite sua senha" : "Digite a senha atual"); } }, 1000); }
+  }
+  function setMode(mode) {
+    lockMode = mode; buf = ""; dots();
+    var link = $("lockLink"); clearTimeout(forgotTimer); forgotArm = 0;
+    if (mode === "setup1") { $("lockTitle").textContent = "Crie uma senha"; lsub("Escolha 6 números para proteger o app."); link.hidden = true; }
+    else if (mode === "setup2") { $("lockTitle").textContent = "Crie uma senha"; lsub("Repita a senha."); link.hidden = true; }
+    else if (mode === "unlock") { $("lockTitle").textContent = "Vales e Comissões"; lsub("Digite sua senha"); link.hidden = false; link.textContent = "Esqueci a senha"; }
+    else if (mode === "change_old") { $("lockTitle").textContent = "Alterar senha"; lsub("Digite a senha atual"); link.hidden = false; link.textContent = "Cancelar"; }
+    else if (mode === "change_new1") { $("lockTitle").textContent = "Nova senha"; lsub("Digite a nova senha."); link.hidden = false; link.textContent = "Cancelar"; }
+    else if (mode === "change_new2") { $("lockTitle").textContent = "Nova senha"; lsub("Repita a nova senha."); link.hidden = false; link.textContent = "Cancelar"; }
+    $("lock").classList.add("on"); $("lock").classList.remove("cover");
+    document.body.classList.add("locked"); checkBlock();
+  }
+  function unlockApp() {
+    unlocked = true; buf = ""; dots(); clearInterval(countdown);
+    $("lock").classList.remove("on", "cover"); document.body.classList.remove("locked");
+    if (wasChange) { $("pinSt").textContent = "Senha alterada."; $("pinSt").className = "cfgst good"; wasChange = false; }
+  }
+  function lockNow() { unlocked = false; setMode("unlock"); }
+  function failTry() {
+    var f = getFail(); f.n++;
+    if (f.n >= 5) f.until = Date.now() + Math.min(30000 * Math.pow(2, f.n - 5), 900000);
+    setFail(f); buf = ""; dots(); shake();
+    if (blockedMs() > 0) checkBlock(); else lsub("Senha incorreta. Tentativa " + f.n + " de 5.", true);
+  }
+  function handle(p) {
+    if (lockMode === "setup1" || lockMode === "change_new1") {
+      firstPin = p; lockMode = lockMode === "setup1" ? "setup2" : "change_new2";
+      buf = ""; dots(); lsub(lockMode === "setup2" ? "Repita a senha." : "Repita a nova senha."); return Promise.resolve();
+    }
+    if (lockMode === "setup2" || lockMode === "change_new2") {
+      var change = lockMode === "change_new2";
+      if (p !== firstPin) {
+        firstPin = ""; buf = ""; dots(); shake();
+        setMode(change ? "change_new1" : "setup1"); lsub("As senhas não conferem. Digite de novo.", true); return Promise.resolve();
+      }
+      return savePin(p).then(function () { wasChange = change; firstPin = ""; setFail({ n: 0, until: 0 }); unlockApp(); })
+        .catch(function () { buf = ""; dots(); lsub("Não consegui salvar a senha neste aparelho.", true); });
+    }
+    if (lockMode === "unlock") { return checkPin(p).then(function (ok) { if (ok) { setFail({ n: 0, until: 0 }); unlockApp(); } else failTry(); }); }
+    if (lockMode === "change_old") { return checkPin(p).then(function (ok) { if (ok) { setFail({ n: 0, until: 0 }); setMode("change_new1"); } else failTry(); }); }
+    return Promise.resolve();
+  }
+  function press(d) {
+    if (busy || blockedMs() > 0 || !$("lock").classList.contains("on") || $("lock").classList.contains("cover")) return;
+    if (buf.length >= LEN) return;
+    buf += d; dots();
+    if (buf.length === LEN) { busy = true; handle(buf).catch(function () {}).then(function () { busy = false; }); }
+  }
+  function back() { if (busy) return; buf = buf.slice(0, -1); dots(); }
+  function buildPad() {
+    var pad = $("lockPad");
+    "123456789".split("").forEach(function (n) {
+      var b = document.createElement("button"); b.type = "button"; b.textContent = n; b.setAttribute("aria-label", n);
+      b.addEventListener("click", function () { press(n); }); pad.appendChild(b);
+    });
+    pad.appendChild(document.createElement("span"));
+    var z = document.createElement("button"); z.type = "button"; z.textContent = "0"; z.setAttribute("aria-label", "0");
+    z.addEventListener("click", function () { press("0"); }); pad.appendChild(z);
+    var d = document.createElement("button"); d.type = "button"; d.className = "ghost"; d.textContent = "⌫"; d.setAttribute("aria-label", "Apagar");
+    d.addEventListener("click", back); pad.appendChild(d);
+  }
+  $("lockLink").addEventListener("click", function () {
+    if (lockMode === "unlock") {
+      var link = $("lockLink");
+      if (forgotArm === 0) {
+        forgotArm = 1;
+        lsub("Isso apaga todos os dados guardados neste aparelho. Se tiver backup, dá para restaurar depois.", true);
+        link.textContent = "Apagar tudo e criar nova senha";
+        forgotTimer = setTimeout(function () { forgotArm = 0; link.textContent = "Esqueci a senha"; lsub("Digite sua senha"); }, 10000);
+      } else {
+        clearTimeout(forgotTimer); forgotArm = 0;
+        try { [LS_KEY, PIN_KEY, FAIL_KEY].forEach(function (k) { localStorage.removeItem(k); }); } catch (e) {}
+        func = []; atualId = null; render(); setMode("setup1");
+      }
+    } else { unlockApp(); }
+  });
+  $("btnLockTop").addEventListener("click", lockNow);
+  $("btnLockNow").addEventListener("click", lockNow);
+  $("btnChangePin").addEventListener("click", function () { unlocked = false; setMode("change_old"); });
+  ["btnRestore", "btnBackup"].forEach(function (id) { $(id).addEventListener("click", function () { skipUntil = Date.now() + 180000; }); });
+  document.addEventListener("keydown", function (e) {
+    if (!$("lock").classList.contains("on")) return;
+    if (/^\d$/.test(e.key)) press(e.key); else if (e.key === "Backspace") back();
+  });
+  document.addEventListener("visibilitychange", function () {
+    if (!getPin() || !unlocked) return;
+    if (document.hidden) { hiddenAt = Date.now(); $("lock").classList.add("on", "cover"); document.body.classList.add("locked"); }
+    else if (Date.now() - hiddenAt < GRACE || Date.now() < skipUntil) { $("lock").classList.remove("on", "cover"); document.body.classList.remove("locked"); }
+    else { lockNow(); }
+  });
+  function initLock() {
+    buildPad();
+    if (!window.crypto || !crypto.subtle) { lsub("Este navegador não permite criar a senha. Abra o app pelo ícone da Tela de Início.", true); return; }
+    setMode(getPin() ? "unlock" : "setup1");
+  }
+
+  /* ---------- Backup ---------- */
+  function keyInfo() {} // placeholder para simetria
+  function bkMsg(m, c) { $("bkSt").textContent = m; $("bkSt").className = "cfgst " + (c || ""); }
+  $("btnBackup").addEventListener("click", function () {
+    var name = "backup-vales-" + isoDate(today()) + ".json";
+    var blob = new Blob([JSON.stringify({ versao: 1, funcionarios: func }, null, 2)], { type: "application/json" });
+    var f = null; try { f = new File([blob], name, { type: "application/json" }); } catch (e) {}
+    if (f && navigator.canShare && navigator.canShare({ files: [f] })) {
+      navigator.share({ files: [f], title: name }).then(function () { bkMsg("Backup pronto.", "good"); }).catch(function () {});
+    } else {
+      var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name;
+      document.body.appendChild(a); a.click(); a.remove(); bkMsg("Backup baixado.", "good");
+    }
+  });
+  $("btnRestore").addEventListener("click", function () { $("fileRestore").click(); });
+  $("fileRestore").addEventListener("change", function () {
+    var f = this.files && this.files[0]; if (!f) return;
+    var self = this;
+    f.text().then(function (tx) {
+      var j = JSON.parse(tx), arr = Array.isArray(j) ? j : j.funcionarios;
+      if (!Array.isArray(arr)) throw new Error("formato");
+      var n = 0;
+      arr.forEach(function (fu) {
+        if (!fu || !fu.id || !fu.nome) return;
+        fu.comissoes = fu.comissoes || []; fu.vales = fu.vales || [];
+        var i = func.findIndex(function (x) { return x.id === fu.id; });
+        if (i > -1) func[i] = fu; else func.push(fu);
+        n++;
+      });
+      cacheSave(); if (!atualId && func.length) atualId = func[0].id; render(); bkMsg(n + " funcionário(s) restaurado(s).", "good");
+    }).catch(function () { bkMsg("Esse arquivo não é um backup válido.", "bad"); })
+      .then(function () { self.value = ""; });
+  });
+
+  if ("serviceWorker" in navigator) window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); });
+  if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(function () {});
+
+  cacheLoad(); render(); info(); initLock();
+})();
+</script>
+</body>
+</html>
